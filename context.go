@@ -9,6 +9,11 @@ type Context struct {
 	*discordgo.InteractionCreate
 }
 
+// newContext returns a new Context for the given interaction create event.
+func newContext(evt *discordgo.InteractionCreate) *Context {
+	return &Context{InteractionCreate: evt}
+}
+
 // Option searches for the first option that matches the given name and returns
 // it. If no option is found, nil is returned instead
 //
