@@ -8,6 +8,11 @@ type Response struct {
 	response discordgo.InteractionResponseData
 }
 
+// newResponse returns a new Response.
+func newResponse() *Response {
+	return new(Response)
+}
+
 // TTS updates whether the response message should be sent as text-to-speech.
 func (r *Response) TTS(tts bool) *Response {
 	r.response.TTS = tts
