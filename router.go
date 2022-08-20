@@ -48,6 +48,14 @@ func (r *Router) Bind(name string, cmd *Command) {
 	r.put(name, cmd)
 }
 
+// BindAll binds all commands in the given map to the Router using its Bind()
+// method. For more details, see Bind().
+func (r *Router) BindAll(cmds map[string]*Command) {
+	for name, cmd := range cmds {
+		r.Bind(name, cmd)
+	}
+}
+
 // AutoBind binds the given Command to the given name. If the name is already
 // taken, the existing Command is overwritten.
 //
@@ -77,6 +85,14 @@ func (r *Router) AutoBind(name string, cmd Runner) {
 	}
 
 	r.Bind(name, com)
+}
+
+// AutoBindAll binds all commands in the given map to the Router using its
+// AutoBind() method. For more details, see AutoBind().
+func (r *Router) AutoBindAll(cmds map[string]Runner) {
+	for name, cmd := range cmds {
+		r.AutoBind(name, cmd)
+	}
 }
 
 // Route handles an interaction create events and routes it to the appropriate
