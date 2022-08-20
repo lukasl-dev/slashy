@@ -68,7 +68,7 @@ func (r *Response) AddFiles(files ...*discordgo.File) *Response {
 }
 
 // Flags enables or disables the given flags on the response message.
-func (r *Response) Flags(suppress, ephemeral bool) {
+func (r *Response) Flags(suppress, ephemeral bool) *Response {
 	r.response.Flags = 0
 	if suppress {
 		r.response.Flags |= discordgo.MessageFlagsSuppressEmbeds
@@ -76,4 +76,5 @@ func (r *Response) Flags(suppress, ephemeral bool) {
 	if ephemeral {
 		r.response.Flags |= discordgo.MessageFlagsEphemeral
 	}
+	return r
 }
