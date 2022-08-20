@@ -31,8 +31,8 @@ func (c *completableRunner) Run(ctx *Context, resp *Response) error {
 	return c.Called(ctx, resp).Error(0)
 }
 
-func (c *completableRunner) AutoComplete(ctx *Context) []*discordgo.ApplicationCommandOptionChoice {
-	return c.Called(ctx).Get(0).([]*discordgo.ApplicationCommandOptionChoice)
+func (c *completableRunner) AutoComplete(ctx *Context, focused *discordgo.ApplicationCommandInteractionDataOption) []*discordgo.ApplicationCommandOptionChoice {
+	return c.Called(ctx, focused).Get(0).([]*discordgo.ApplicationCommandOptionChoice)
 }
 
 type errorResponder struct {
