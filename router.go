@@ -6,27 +6,35 @@ import (
 	"strings"
 )
 
-type Router struct {
-	// commands is a map of lower-case Command names to commands.
-	commands map[string]*Command
-
-	// errorResponder is the ErrorResponder that is used to construct error
+type RouterOptions struct {
+	// ErrorResponder is the ErrorResponder that is used to construct error
 	// responses.
-	errorResponder ErrorResponder
+	ErrorResponder ErrorResponder
 }
 
-// NewRouter returns a new router without any commands.
-//
-// The given ErrorResponder is used to construct error messages. If nil is
-// given, the defaultErrorResponder is used.
-func NewRouter(responder ErrorResponder) *Router {
-	if responder == nil {
-		responder = defaultErrorResponder
+type Router struct {
+	// opts are the RouterOptions that are used to construct the Router.
+	opts *RouterOptions
+
+	// commands is a map of lower-case Command names to commands.
+	commands map[string]*Command
+}
+
+// NewRouter returns a new router without any commands. The given options are used
+// to change the behavior of the router. If nil is passed, the default options
+// are used.
+func NewRouter(opts *RouterOptions) *Router {
+	if opts == nil {
+		opts = new(RouterOptions)
+	}
+
+	if opts.ErrorResponder == nil {
+		opts.ErrorResponder = defaultErrorResponder
 	}
 
 	return &Router{
-		commands:       make(map[string]*Command),
-		errorResponder: responder,
+		opts:     opts,
+		commands: make(map[string]*Command),
 	}
 }
 
@@ -184,7 +192,7 @@ func (r *Router) respondError(ctx *Context, cmd *Command, err error) *discordgo.
 	if cmd.ErrorResponder != nil {
 		cmd.ErrorResponder.RespondError(ctx, resp, err)
 	} else {
-		r.errorResponder.RespondError(ctx, resp, err)
+		r.opts.ErrorResponder.RespondError(ctx, resp, err)
 	}
 
 	return &discordgo.InteractionResponse{
