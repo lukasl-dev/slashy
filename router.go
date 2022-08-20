@@ -174,7 +174,7 @@ func (r *Router) autoComplete(ctx *Context, cmd *CommandRoute) *discordgo.Intera
 		}
 	}
 
-	choices := cmd.AutoCompleter.AutoComplete(ctx)
+	choices := cmd.AutoCompleter.AutoComplete(ctx, ctx.FocusedOption())
 
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionApplicationCommandAutocompleteResult,
