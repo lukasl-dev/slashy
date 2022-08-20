@@ -118,7 +118,7 @@ func (r *Router) Route(ses *discordgo.Session, evt *discordgo.InteractionCreate)
 		return
 	}
 
-	resp := r.run(ctx, cmd)
+	resp := r.handle(ctx, cmd)
 	if resp == nil {
 		return
 	}
