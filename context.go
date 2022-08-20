@@ -39,3 +39,15 @@ func (ctx *Context) Option(name string) *discordgo.ApplicationCommandInteraction
 	}
 	return nil
 }
+
+// FocusedOption searches for the first option that is focused and returns it. If
+// no option is found, nil is returned instead.
+func (ctx *Context) FocusedOption() *discordgo.ApplicationCommandInteractionDataOption {
+	opts := ctx.ApplicationCommandData().Options
+	for _, opt := range opts {
+		if opt.Focused {
+			return opt
+		}
+	}
+	return nil
+}
