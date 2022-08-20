@@ -1,6 +1,7 @@
 package slashy
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"strings"
 )
@@ -18,14 +19,14 @@ type Router struct {
 //
 // The given ErrorResponder is used to construct error messages. If nil is
 // given, the defaultErrorResponder is used.
-func NewRouter(errResp ErrorResponder) *Router {
-	if errResp == nil {
-		errResp = defaultErrorResponder
+func NewRouter(responder ErrorResponder) *Router {
+	if responder == nil {
+		responder = defaultErrorResponder
 	}
 
 	return &Router{
 		commands:       make(map[string]*Command),
-		errorResponder: errResp,
+		errorResponder: responder,
 	}
 }
 
@@ -39,9 +40,9 @@ func (r *Router) Bind(name string, cmd *Command) {
 	case name == "":
 		panic("Bind(): name must not be empty")
 	case cmd == nil:
-		panic("Bind(): cmd must not be nil")
+		panic(fmt.Sprintf("Bind(): cmd of '%s' must not be nil", name))
 	case cmd.Runner == nil:
-		panic("Bind(): cmd.Runner must not be nil")
+		panic(fmt.Sprintf("Bind(): cmd.Runner of '%s' must not be nil", name))
 	}
 
 	r.put(name, cmd)
@@ -61,7 +62,7 @@ func (r *Router) AutoBind(name string, cmd Runner) {
 	case name == "":
 		panic("AutoBind(): name must not be empty")
 	case cmd == nil:
-		panic("AutoBind(): cmd must not be nil")
+		panic(fmt.Sprintf("AutoBind(): cmd of '%s' must not be nil", name))
 	}
 
 	com := r.get(name)
