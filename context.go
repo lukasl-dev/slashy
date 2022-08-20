@@ -7,11 +7,15 @@ import (
 
 type Context struct {
 	*discordgo.InteractionCreate
+
+	// Session is the session that received the interaction-create event. It can
+	// be used to interact directly with Discord.
+	Session *discordgo.Session
 }
 
 // newContext returns a new Context for the given interaction create event.
-func newContext(evt *discordgo.InteractionCreate) *Context {
-	return &Context{InteractionCreate: evt}
+func newContext(ses *discordgo.Session, evt *discordgo.InteractionCreate) *Context {
+	return &Context{Session: ses, InteractionCreate: evt}
 }
 
 // Option searches for the first option that matches the given name and returns

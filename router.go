@@ -80,8 +80,8 @@ func (r *Router) AutoBind(name string, cmd Runner) {
 
 // Route handles an interaction create events and routes it to the appropriate
 // Command. Unknown interaction types and commands are ignored.
-func (r *Router) Route(s *discordgo.Session, evt *discordgo.InteractionCreate) {
-	ctx := newContext(evt)
+func (r *Router) Route(ses *discordgo.Session, evt *discordgo.InteractionCreate) {
+	ctx := newContext(ses, evt)
 
 	cmd := r.get(ctx.ApplicationCommandData().Name)
 	if cmd == nil {
@@ -93,7 +93,7 @@ func (r *Router) Route(s *discordgo.Session, evt *discordgo.InteractionCreate) {
 		return
 	}
 
-	_ = s.InteractionRespond(evt.Interaction, resp)
+	_ = ses.InteractionRespond(evt.Interaction, resp)
 }
 
 // handle handles an interaction create event and returns the response. If the
