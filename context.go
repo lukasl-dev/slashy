@@ -8,14 +8,21 @@ import (
 type Context struct {
 	*discordgo.InteractionCreate
 
+	// Command is the command name that was used to invoke the interaction.
+	Command string
+
 	// Session is the session that received the interaction-create event. It can
 	// be used to interact directly with Discord.
 	Session *discordgo.Session
 }
 
 // newContext returns a new Context for the given interaction create event.
-func newContext(ses *discordgo.Session, evt *discordgo.InteractionCreate) *Context {
-	return &Context{Session: ses, InteractionCreate: evt}
+func newContext(cmd string, ses *discordgo.Session, evt *discordgo.InteractionCreate) *Context {
+	return &Context{
+		Command:           cmd,
+		Session:           ses,
+		InteractionCreate: evt,
+	}
 }
 
 // Option searches for the first option that matches the given name and returns

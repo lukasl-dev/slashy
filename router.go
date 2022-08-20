@@ -103,7 +103,7 @@ func (r *Router) AutoBindAll(cmds map[string]Runner) {
 // Route handles an interaction create events and routes it to the appropriate
 // Command. Unknown interaction types and commands are ignored.
 func (r *Router) Route(ses *discordgo.Session, evt *discordgo.InteractionCreate) {
-	ctx := newContext(ses, evt)
+	ctx := newContext(evt.ApplicationCommandData().Name, ses, evt)
 
 	cmd := r.get(ctx.ApplicationCommandData().Name)
 	if cmd == nil {
