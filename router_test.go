@@ -73,7 +73,7 @@ func TestRouter_Bind_WithoutName(t *testing.T) {
 	router := NewRouter(nil)
 
 	r.Panics(func() {
-		router.Bind("", &Command{Runner: new(runner)})
+		router.Bind("", &CommandRoute{Runner: new(runner)})
 	})
 	r.Empty(router.commands)
 }
@@ -95,7 +95,7 @@ func TestRouter_Bind_WithoutRunner(t *testing.T) {
 	router := NewRouter(nil)
 
 	r.Panics(func() {
-		router.Bind("test", new(Command))
+		router.Bind("test", new(CommandRoute))
 	})
 	r.Empty(router.commands)
 }
@@ -108,7 +108,7 @@ func TestRouter_Bind_Valid(t *testing.T) {
 	router := NewRouter(nil)
 
 	r.NotPanics(func() {
-		router.Bind("test", &Command{Runner: new(runner)})
+		router.Bind("test", &CommandRoute{Runner: new(runner)})
 	})
 	r.Contains(router.commands, strings.ToLower(name))
 }

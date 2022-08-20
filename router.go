@@ -16,8 +16,8 @@ type Router struct {
 	// opts are the RouterOptions that are used to construct the Router.
 	opts *RouterOptions
 
-	// commands is a map of lower-case Command names to commands.
-	commands map[string]*Command
+	// commands is a map of lower-case CommandRoute names to commands.
+	commands map[string]*CommandRoute
 }
 
 // NewRouter returns a new router without any commands. The given options are used
@@ -34,16 +34,16 @@ func NewRouter(opts *RouterOptions) *Router {
 
 	return &Router{
 		opts:     opts,
-		commands: make(map[string]*Command),
+		commands: make(map[string]*CommandRoute),
 	}
 }
 
-// Bind binds the given Command to the given name. If the name is already taken,
-// the existing Command is overwritten.
+// Bind binds the given CommandRoute to the given name. If the name is already taken,
+// the existing CommandRoute is overwritten.
 //
-// Command names are case-insensitive. Therefore, "command" and "COMMAND" are
+// CommandRoute names are case-insensitive. Therefore, "command" and "COMMAND" are
 // considered the same. Note that the name is stored in the lower-case.
-func (r *Router) Bind(name string, cmd *Command) {
+func (r *Router) Bind(name string, cmd *CommandRoute) {
 	switch {
 	case name == "":
 		panic("Bind(): name must not be empty")
@@ -58,20 +58,20 @@ func (r *Router) Bind(name string, cmd *Command) {
 
 // BindAll binds all commands in the given map to the Router using its Bind()
 // method. For more details, see Bind().
-func (r *Router) BindAll(cmds map[string]*Command) {
+func (r *Router) BindAll(cmds map[string]*CommandRoute) {
 	for name, cmd := range cmds {
 		r.Bind(name, cmd)
 	}
 }
 
-// AutoBind binds the given Command to the given name. If the name is already
-// taken, the existing Command is overwritten.
+// AutoBind binds the given CommandRoute to the given name. If the name is already
+// taken, the existing CommandRoute is overwritten.
 //
 // The difference between Bind and AutoBind is that AutoBind takes a Runner and
 //  tests whether the Runner is also an AutoCompleter. If that is the case,
-// the AutoCompleter is bound to the Command.
+// the AutoCompleter is bound to the CommandRoute.
 //
-// Command names are case-insensitive. Therefore, "command" and "COMMAND" are
+// CommandRoute names are case-insensitive. Therefore, "command" and "COMMAND" are
 // considered the same. Note that the name is stored in the lower-case.
 func (r *Router) AutoBind(name string, cmd Runner) {
 	switch {
@@ -83,7 +83,7 @@ func (r *Router) AutoBind(name string, cmd Runner) {
 
 	com := r.get(name)
 	if com == nil {
-		com = new(Command)
+		com = new(CommandRoute)
 	}
 	com.Runner = cmd
 
@@ -109,7 +109,7 @@ func (r *Router) AutoBindAll(cmds map[string]Runner) {
 }
 
 // Route handles an interaction create events and routes it to the appropriate
-// Command. Unknown interaction types and commands are ignored.
+// CommandRoute. Unknown interaction types and commands are ignored.
 func (r *Router) Route(ses *discordgo.Session, evt *discordgo.InteractionCreate) {
 	ctx := newContext(evt.ApplicationCommandData().Name, ses, evt)
 
@@ -128,7 +128,7 @@ func (r *Router) Route(ses *discordgo.Session, evt *discordgo.InteractionCreate)
 
 // handle handles an interaction create event and returns the response. If the
 // interaction type is not supported, nil is returned.
-func (r *Router) handle(ctx *Context, cmd *Command) *discordgo.InteractionResponse {
+func (r *Router) handle(ctx *Context, cmd *CommandRoute) *discordgo.InteractionResponse {
 	switch ctx.Type {
 	case discordgo.InteractionApplicationCommand:
 		return r.run(ctx, cmd)
@@ -144,7 +144,7 @@ func (r *Router) handle(ctx *Context, cmd *Command) *discordgo.InteractionRespon
 //
 // Errors returned by the AutoCompleter are formatted property and are returned
 // as an interaction response.
-func (r *Router) run(ctx *Context, cmd *Command) *discordgo.InteractionResponse {
+func (r *Router) run(ctx *Context, cmd *CommandRoute) *discordgo.InteractionResponse {
 	resp := newResponse()
 
 	err := cmd.Runner.Run(ctx, resp)
@@ -164,7 +164,7 @@ func (r *Router) run(ctx *Context, cmd *Command) *discordgo.InteractionResponse 
 //
 // Errors returned by the AutoCompleter are formatted property and are returned
 // as an interaction response.
-func (r *Router) autoComplete(ctx *Context, cmd *Command) *discordgo.InteractionResponse {
+func (r *Router) autoComplete(ctx *Context, cmd *CommandRoute) *discordgo.InteractionResponse {
 	if cmd.AutoCompleter == nil {
 		return &discordgo.InteractionResponse{
 			Type: discordgo.InteractionApplicationCommandAutocompleteResult,
@@ -184,9 +184,9 @@ func (r *Router) autoComplete(ctx *Context, cmd *Command) *discordgo.Interaction
 	}
 }
 
-// respondError construct an interaction response using the Command's or, if
+// respondError construct an interaction response using the CommandRoute's or, if
 // it is nil, the Router's error responder.
-func (r *Router) respondError(ctx *Context, cmd *Command, err error) *discordgo.InteractionResponse {
+func (r *Router) respondError(ctx *Context, cmd *CommandRoute, err error) *discordgo.InteractionResponse {
 	resp := newResponse()
 
 	if cmd.ErrorResponder != nil {
@@ -201,20 +201,20 @@ func (r *Router) respondError(ctx *Context, cmd *Command, err error) *discordgo.
 	}
 }
 
-// get returns the Command with the given name. If no Command with the given name
+// get returns the CommandRoute with the given name. If no CommandRoute with the given name
 // exists, nil is returned.
 //
-// Command names are case-insensitive. Therefore, "command" and "COMMAND" are
+// CommandRoute names are case-insensitive. Therefore, "command" and "COMMAND" are
 // considered the same. Note that the name is stored in the lower-case.
-func (r *Router) get(name string) *Command {
+func (r *Router) get(name string) *CommandRoute {
 	return r.commands[strings.ToLower(name)]
 }
 
-// put inserts the given Command under the given name. If the name is already
+// put inserts the given CommandRoute under the given name. If the name is already
 // taken, the existing command is overwritten.
 //
-// Command names are case-insensitive. Therefore, "command" and "COMMAND" are
+// CommandRoute names are case-insensitive. Therefore, "command" and "COMMAND" are
 // considered the same. Note that the name is stored in the lower-case.
-func (r *Router) put(name string, cmd *Command) {
+func (r *Router) put(name string, cmd *CommandRoute) {
 	r.commands[strings.ToLower(name)] = cmd
 }

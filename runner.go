@@ -1,11 +1,11 @@
 package slashy
 
 type Runner interface {
-	// Run executes the Command with the given context. If the Command fails,
+	// Run executes the CommandRoute with the given context. If the CommandRoute fails,
 	// the causing error is returned.
 	//
 	// The given Response is used to mutate the response message. The response
-	// message is built after the Command is run successfully.
+	// message is built after the CommandRoute is run successfully.
 	Run(ctx *Context, resp *Response) error
 }
 

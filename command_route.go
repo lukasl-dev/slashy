@@ -1,11 +1,11 @@
 package slashy
 
-type Command struct {
-	// Runner runs the Command within a given Context. Every Command must have
+type CommandRoute struct {
+	// Runner runs the CommandRoute within a given Context. Every CommandRoute must have
 	// at least a Runner.
 	Runner Runner `json:"runner,omitempty"`
 
-	// AutoCompleter provides auto-completion for the Command. This is optional.
+	// AutoCompleter provides auto-completion for the CommandRoute. This is optional.
 	AutoCompleter AutoCompleter `json:"autoCompleter,omitempty"`
 
 	// ErrorResponder is the command's individual ErrorResponder used to
