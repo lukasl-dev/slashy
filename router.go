@@ -84,6 +84,11 @@ func (r *Router) AutoBind(name string, cmd Runner) {
 		com.AutoCompleter = completer
 	}
 
+	errResponder, isErrResponder := cmd.(ErrorResponder)
+	if isErrResponder {
+		com.ErrorResponder = errResponder
+	}
+
 	r.Bind(name, com)
 }
 
@@ -136,11 +141,7 @@ func (r *Router) run(ctx *Context, cmd *Command) *discordgo.InteractionResponse 
 
 	err := cmd.Runner.Run(ctx, resp)
 	if err != nil {
-		r.errorResponder.RespondError(ctx, resp, err)
-		return &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &resp.response,
-		}
+		return r.respondError(ctx, cmd, err)
 	}
 
 	return &discordgo.InteractionResponse{
@@ -172,6 +173,23 @@ func (r *Router) autoComplete(ctx *Context, cmd *Command) *discordgo.Interaction
 		Data: &discordgo.InteractionResponseData{
 			Choices: choices,
 		},
+	}
+}
+
+// respondError construct an interaction response using the Command's or, if
+// it is nil, the Router's error responder.
+func (r *Router) respondError(ctx *Context, cmd *Command, err error) *discordgo.InteractionResponse {
+	resp := newResponse()
+
+	if cmd.ErrorResponder != nil {
+		cmd.ErrorResponder.RespondError(ctx, resp, err)
+	} else {
+		r.errorResponder.RespondError(ctx, resp, err)
+	}
+
+	return &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &resp.response,
 	}
 }
 
