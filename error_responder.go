@@ -15,5 +15,5 @@ func (fn ErrorResponderFunc) RespondError(ctx *Context, resp *Response, err erro
 
 // defaultErrorResponder is the default ErrorResponder.
 var defaultErrorResponder ErrorResponder = ErrorResponderFunc(func(ctx *Context, resp *Response, err error) {
-	resp.Content("An error occurred: " + err.Error())
+	resp.Content("An error occurred: "+err.Error()).Flags(false, true)
 })
