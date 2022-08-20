@@ -52,7 +52,7 @@ func TestNewRouter_WithoutErrorResponder(t *testing.T) {
 
 	r.NotNil(router)
 	r.Empty(router.commands)
-	r.NotNil(router.errorResponder)
+	r.NotNil(router.opts.ErrorResponder)
 }
 
 func TestNewRouter_WithCustomErrorResponder(t *testing.T) {
@@ -60,12 +60,11 @@ func TestNewRouter_WithCustomErrorResponder(t *testing.T) {
 
 	r := require.New(t)
 
-	router := NewRouter(errResp)
+	router := NewRouter(&RouterOptions{ErrorResponder: errResp})
 
 	r.NotNil(router)
 	r.Empty(router.commands)
-	r.NotNil(router.errorResponder)
-	r.Equal(router.errorResponder, errResp)
+	r.Equal(router.opts.ErrorResponder, errResp)
 }
 
 func TestRouter_Bind_WithoutName(t *testing.T) {
